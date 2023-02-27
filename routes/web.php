@@ -14,10 +14,17 @@ use App\Http\Controllers\Auth\AuthController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::group(['middleware' => ['guest']], function() {
+    // ログインフォーム表示
+    Route::get('/', [AuthController::class, 'showLogin'])->name('showLogin');
+    
+    // ログイン処理
+    Route::post('login', [AuthController::class, 'login'])->name('login');
 });
 
-Route::get('/', [AuthController::class, 'showLogin'])->name('showLogin');
-
-Route::post('login', [AuthController::class, 'login'])->name('login');
+Route::group(['middleware' => ['auth']], function() {
+    // プロフィール画面に遷移
+    Route::get('home', function() {
+        return view('home');
+    })->name('home');
+});
